@@ -17,6 +17,7 @@ import { db } from "../../config/firebaseConfig";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import DatePickerComponent from "../../components/restaurant/DatePickerComponent";
 import GuestPickerComponent from "../../components/restaurant/GuestPickerComponent";
+import FindSlots from "../../components/restaurant/FindSlots";
 
 const Restaurant = () => {
   const [date, setDate] = useState(new Date());
@@ -26,6 +27,7 @@ const Restaurant = () => {
   const [carouselData, setCarouselData] = useState([]);
   const [slotsData, setSlotsData] = useState([]);
   const { restaurant } = useLocalSearchParams();
+  const [selectedSlot, setSelectedSlot] = useState(null)
   const flatListRef = useRef(null);
   const windowWidth = Dimensions.get("window").width;
 
@@ -161,7 +163,7 @@ const Restaurant = () => {
           slotsSnapshot.docs.forEach((slotDoc) => {
             slots.push(slotDoc.data());
           });
-          setSlotsData(slots);
+          setSlotsData(slots[0]?.slot);
         } else {
           console.log("No slots data found.");
         }
@@ -175,9 +177,9 @@ const Restaurant = () => {
     getRestaurantData();
   }, []);
 
-  console.log("Restaurant:", restaurantData);
-  console.log("Carousel:", carouselData);
-  console.log("Slots:", slotsData);
+  // console.log("Restaurant:", restaurantData);
+  // console.log("Carousel:", carouselData);
+  // console.log("Slots:", slotsData);
 
   return (
     <SafeAreaView
@@ -222,7 +224,7 @@ const Restaurant = () => {
             {restaurantData?.opening}- {restaurantData?.closing}
           </Text>
         </View>
-        <View className="flex-1 border m-2 p-2 border-[#f49b33] roundeed-lg ">
+        <View className="flex-1 border m-2 p-2 border-[#f49b33] rounded-lg shadow-sm ">
           <View className="flex-1 flex-row m-2 p-2 justify-end items-center">
             <View className="flex-1 flex-row">
               <Ionicons name="calendar" size={20} color="#f49b33" />
@@ -240,6 +242,10 @@ const Restaurant = () => {
               setSelectedGuest={setSelectedGuest}
             />
           </View>
+        </View>
+        <View className="flex-1">
+          <FindSlots date={date} selectedGuest={selectedGuest} slots={slotsData} selectedSlot={selectedSlot} setSelectedSlot={setSelectedSlot}  />
+
         </View>
       </ScrollView>
     </SafeAreaView>

@@ -18,7 +18,8 @@ import { Ionicons } from "@expo/vector-icons";
 import logo from "../../assets/images/dinetimelogo.png";
 import entry from "../../assets/images/cup.png";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { auth } from "../../config/firebaseConfig";
+import { auth, db } from "../../config/firebaseConfig";
+import { doc, serverTimestamp, setDoc } from "@firebase/firestore";
 
 const SignUp = () => {
   const router = useRouter();
@@ -30,56 +31,77 @@ const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const handleSignUp = async () => {
-    if (!name.trim() || !email.trim() || !password) {
-      Toast.show({
-        type: "error",
-        text1: "Error🚫",
-        text2: "Please fill all fields.❗",
-        visibilityTime: 5000,
-        position: "top",
-      });
-      return;
-    }
-    if (password !== confirmPassword) {
-      Toast.show({
-        type: "warning",
-        text1: "Enter the same password",
-        text2: "Passwords do not match.❌",
-        visibilityTime: 5000,
-        position: "top",
-      });
-      return;
-    }
-    setLoading(true);
-    try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      await updateProfile(userCredential.user, { displayName: name });
-      router.replace("/(tabs)/home");
-      Toast.show({
-               type: 'success',
-               text1: "Account created on DineTime",
-               text2: "You’re all set! 🚀", 
-               visibilityTime: 6000, 
-               position: "top",
-               
-             });
-    } catch (error) {
-      Toast.show({
-        type: "error",
-        text1: "Signup Failed❗",
-        text2: error.message,
-        visibilityTime: 5000,
-        position: "top",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+const handleSignUp = async () => {
+  if (!name.trim() || !email.trim() || !password) {
+    Toast.show({
+      type: "error",
+      text1: "Error🚫",
+      text2: "Please fill all fields.❗",
+      visibilityTime: 5000,
+      position: "top",
+    });
+    return;
+  }
+
+  if (password !== confirmPassword) {
+    Toast.show({
+      type: "info",
+      text1: "Enter the same password",
+      text2: "Passwords do not match.❌",
+      visibilityTime: 5000,
+      position: "top",
+    });
+    return;
+  }
+
+  setLoading(true);
+  try {
+   
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+
+   
+    await updateProfile(user, { displayName: name });
+
+   
+    const userRef = doc(db, "users", user.uid);
+    await setDoc(
+      userRef,
+      {
+        uid: user.uid,
+        name: name,
+        email: email,
+        photoURL: user.photoURL || null,
+        emailVerified: !!user.emailVerified,
+        createdAt: serverTimestamp(), 
+      },
+      { merge: true } 
+    );
+
+    Toast.show({
+      type: "success",
+      text1: "Account created on DineTime",
+      text2: "You’re all set! 🚀",
+      visibilityTime: 6000,
+      position: "top",
+    });
+
+    // navigate after saving profile
+    router.replace("/home");
+  } catch (error) {
+    console.error("Sign up error:", error);
+    Toast.show({
+      type: "error",
+      text1: "Signup Failed❗",
+      text2: error.message,
+      visibilityTime: 5000,
+      position: "top",
+    });
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <SafeAreaView style={styles.container}>

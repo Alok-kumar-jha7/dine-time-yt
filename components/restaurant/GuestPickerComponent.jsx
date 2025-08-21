@@ -1,14 +1,14 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import React from "react";
 
-const GuestPickerComponent = (selectedGuest, setSelectedGuest) => {
+const GuestPickerComponent = ({selectedGuest, setSelectedGuest}) => {
   const decrement = () => {
     if (selectedGuest > 1) {
       setSelectedGuest(selectedGuest - 1);
     }
   };
   const increment = () => {
-    if (selectedGuest <= 10) {
+    if (selectedGuest < 10) {
       setSelectedGuest(selectedGuest + 1);
     }
   };
@@ -16,7 +16,7 @@ const GuestPickerComponent = (selectedGuest, setSelectedGuest) => {
   return (
     <View className="flex flex-row items-center rounded-lg text-white text-base ">
       <TouchableOpacity onPress={decrement} className="rounded">
-        <Text className="text-white text-lg border border-[#f49b33] rounded-l-lg px-3 ">
+        <Text className="text-white text-lg  border border-[#f49b33] rounded-l-lg px-4 ">
           -
         </Text>
       </TouchableOpacity>

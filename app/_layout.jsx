@@ -9,6 +9,7 @@ export default function RootLayout() {
     
     
   });
+
   return (
     <Stack screenOptions={{ headerShown: false }} >
       <Toast />

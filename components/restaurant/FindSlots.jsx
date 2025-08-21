@@ -4,6 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { addDoc, collection } from "@firebase/firestore";
 import { db } from "../../config/firebaseConfig";
 import Toast from "react-native-toast-message";
+import { router, useRouter } from "expo-router";
 
 const FindSlots = ({
   date,
@@ -11,38 +12,41 @@ const FindSlots = ({
   selectedGuest,
   selectedSlot,
   setSelectedSlot,
+  restaurant
 }) => {
   const [slotsVisible, setSlotsVisible] = useState(false);
+  const router = useRouter();
   const visiblitySlot = () => {
     setSlotsVisible(!slotsVisible);
   };
   const handleBooking = async() => {
     const userEmail = await AsyncStorage.getItem("userEmail")
     console.log("hi", userEmail);
-    
+ 
     if (userEmail) {
       try {
         await addDoc(collection(db, "bookings"), {
           email: userEmail,
           slot: selectedSlot,
           date: date.toISOString(),
-          guests: selectedGuest
+          guests: selectedGuest,
+          restaurant: restaurant,
         });
         Toast.show({
-           type: "info",
-      text1: "Bokking done❗",
-      text2: "Congrats 🎉",
-      visibilityTime: 5000,
-      position: "top",
-        })
+          type: "info",
+          text1: "Bokking done❗",
+          text2: "Congrats 🎉",
+          visibilityTime: 5000,
+          position: "top",
+        });
       } catch (error) {
         Toast.show({
-        type: "error",
-        text1: "Booking Failed❗",
-        text2: error.message,
-        visibilityTime: 5000,
-        position: "top",
-        })
+          type: "error",
+          text1: "Booking Failed❗",
+          text2: error.message,
+          visibilityTime: 5000,
+          position: "top",
+        });
       }
     }
   }

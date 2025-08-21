@@ -11,9 +11,15 @@ import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import logo from "../assets/images/dinetimelogo.png";
 import entry from "../assets/images/cup.png";
+import AsyncStorage from "@react-native-async-storage/async-storage"
 
 export default function Index() {
   const router = useRouter();
+
+  const handleGuest = async() => {
+    await AsyncStorage.setItem("isGuest", "true");
+     router.push("/home")
+  }
 
   return (
     <SafeAreaView className={"bg-stone-950"} style={styles.container}>
@@ -21,7 +27,7 @@ export default function Index() {
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.crossButton}
-          onPress={() => router.push("/home")} // Adjust path to your home page
+          onPress={handleGuest}
         >
           <Text style={styles.crossIcon}>✕</Text>
         </TouchableOpacity>

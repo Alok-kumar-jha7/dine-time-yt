@@ -20,6 +20,7 @@ import { auth } from "../../config/firebaseConfig";
 import logo from "../../assets/images/dinetimelogo.png";
 import entry from "../../assets/images/cup.png";
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 const SignIn = () => {
@@ -29,7 +30,7 @@ const SignIn = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleSignIn = async (values) => {
+  const handleSignIn = async () => {
     if (!email || !password) {
       Toast.show({
         type: "error",
@@ -42,7 +43,8 @@ const SignIn = () => {
     }
     setLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const usercredential = await signInWithEmailAndPassword(auth, email, password);
+      const user =usercredential.user
       Toast.show({
         type: "success",
         text1: "Signed In✅",
@@ -50,6 +52,11 @@ const SignIn = () => {
         visibilityTime: 3000,
         position: "top",
       });
+      
+      await AsyncStorage.setItem("userEmail",email)
+      const hello = await AsyncStorage.getItem("userEmail");
+
+      console.log("hello",hello)
       setTimeout(() => {
         router.replace("/(tabs)/home");
       }, 1200);

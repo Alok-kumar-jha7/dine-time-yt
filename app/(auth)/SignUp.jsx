@@ -20,6 +20,7 @@ import entry from "../../assets/images/cup.png";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth, db } from "../../config/firebaseConfig";
 import { doc, serverTimestamp, setDoc } from "@firebase/firestore";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const SignUp = () => {
   const router = useRouter();
@@ -85,8 +86,10 @@ const handleSignUp = async () => {
       visibilityTime: 6000,
       position: "top",
     });
+    
+   await AsyncStorage.setItem("userEmail", user.email);
 
-    // navigate after saving profile
+
     router.replace("/home");
   } catch (error) {
     console.error("Sign up error:", error);
